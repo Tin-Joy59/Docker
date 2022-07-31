@@ -1,0 +1,182 @@
+version: "3.4"
+
+services:
+  prowlarr:
+    container_name: prowlarr
+    image: lscr.io/linuxserver/prowlarr:develop
+    restart: unless-stopped
+    environment:
+      - PGID=${PGID}
+      - PUID=${PUID}
+      - TZ=${TZ}
+      - DOCKER_MODS=ghcr.io/gilbn/theme.park:prowlarr
+      - TP_THEME=organizr
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+    ports:
+      - 9696:9696
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ${DIR_CONFIG}/Media/prowlarr:/config
+
+  bazarr:
+    container_name: bazarr
+    image: lscr.io/linuxserver/bazarr:latest
+    restart: unless-stopped
+    environment:
+      - PGID=${PGID}
+      - PUID=${PUID}
+      - TZ=${TZ}
+      - DOCKER_MODS=ghcr.io/gilbn/theme.park:bazarr
+      - TP_THEME=organizr
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 256M
+    ports:
+      - 6767:6767
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ${DIR_CONFIG}/Media/bazarr:/config
+      - ${DIR_MEDIA}/Movies:/movies
+      - ${DIR_MEDIA}/Series:/tv
+
+  lidarr:
+    container_name: lidarr
+    image: lscr.io/linuxserver/lidarr:latest
+    restart: unless-stopped
+    environment:
+      - PGID=${PGID}
+      - PUID=${PUID}
+      - TZ=${TZ}
+      - DOCKER_MODS=ghcr.io/gilbn/theme.park:lidarr
+      - TP_THEME=organizr
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+    ports:
+      - 8686:8686
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ${DIR_CONFIG}/Media/lidarr:/config
+      - ${DIR_DOWNLOADS}:/data
+      - ${DIR_DOWNLOADS}:/downloads
+      - ${DIR_MEDIA}/Music:/music
+
+  radarr:
+    container_name: radarr
+    image: lscr.io/linuxserver/radarr:latest
+    restart: unless-stopped
+    environment:
+      - PGID=${PGID}
+      - PUID=${PUID}
+      - TZ=${TZ}
+      - DOCKER_MODS=ghcr.io/gilbn/theme.park:radarr
+      - TP_THEME=organizr
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+    ports:
+      - 7878:7878
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ${DIR_CONFIG}/Media/radarr:/config
+      - ${DIR_DOWNLOADS}:/data
+      - ${DIR_DOWNLOADS}:/downloads
+      - ${DIR_MEDIA}/Movies:/movies
+
+  sonarr:
+    container_name: sonarr
+    image: lscr.io/linuxserver/sonarr:latest
+    restart: unless-stopped
+    environment:
+      - PGID=${PGID}
+      - PUID=${PUID}
+      - TZ=${TZ}
+      - DOCKER_MODS=ghcr.io/gilbn/theme.park:sonarr
+      - TP_THEME=organizr
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+    ports:
+      - 8989:8989
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ${DIR_CONFIG}/Media/sonarr:/config
+      - ${DIR_DOWNLOADS}:/data
+      - ${DIR_DOWNLOADS}:/downloads
+      - ${DIR_MEDIA}/Series:/tv
+
+  ombi:
+    container_name: ombi
+    image: lscr.io/linuxserver/ombi
+    restart: unless-stopped
+    environment:
+      - PGID=${PGID}
+      - PUID=${PUID}
+      - TZ=${TZ}
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+    ports:
+      - 3579:3579
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ${DIR_CONFIG}/Media/ombi:/config
+
+  qbittorrent:
+    container_name: qbittorrent
+    image: lscr.io/linuxserver/qbittorrent:latest
+    restart: unless-stopped
+    environment:
+      - PGID=${PGID}
+      - PUID=${PUID}
+      - TZ=${TZ}
+      - WEBUI_PORT=8080
+      - DOCKER_MODS=ghcr.io/gilbn/theme.park:qbittorrent
+      - TP_THEME=organizr
+    ports:
+      - 51413:51413
+      - 51413:51413/udp
+      - 6881:6881
+      - 6881:6881/udp
+      - 8080:8080
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ${DIR_CONFIG}/Media/qbittorrent:/config
+      - ${DIR_DOWNLOADS}:/downloads
+
+  jellyfin:
+    container_name: jellyfin
+    image: lscr.io/linuxserver/jellyfin:latest
+    restart: unless-stopped
+    environment:
+      - PGID=${PGID}
+      - PUID=${PUID}
+      - TZ=${TZ}
+      - UMASK=022
+    ports:
+      - 8096:8096
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ${DIR_CONFIG}/Media/jellyfin:/config
+      - ${DIR_MEDIA}/Series:/data/tvshows
+      - ${DIR_MEDIA}/Movies:/data/movies
+      - ${DIR_MEDIA}/Music:/data/music
+      - ${DIR_MEDIA}/Videos:/data/videos
+      - ${DIR_MEDIA}/Pictures:/data/pictures
+      - ${DIR_MEDIA}/Books:/data/books
+    devices:
+      - /dev/dri:/dev/dri
